@@ -30,7 +30,7 @@ CDL_TO_CROP = {
 
 
 def fetch_year(x: float, y: float, year: int) -> str | None:
-    response = requests.get(CDL_URL, params={"year": year, "x": x, "y": y}, timeout=30)
+    response = requests.get(CDL_URL, params={"year": year, "x": x, "y": y}, timeout=90)  # сервіс буває повільним
     response.raise_for_status()
     match = re.search(r'category: "([^"]+)"', response.text)
     return match.group(1) if match else None

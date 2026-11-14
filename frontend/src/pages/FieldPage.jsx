@@ -23,7 +23,7 @@ const CONSTRAINTS = [
   { key: 'small_grain_equipment', title: 'I have equipment for small grains' },
 ]
 
-export default function FieldPage({ location, setLocation, priorities, setPriorities, constraints, setConstraints, onAnalyze, loading }) {
+export default function FieldPage({ location, setLocation, priorities, setPriorities, constraints, setConstraints, onAnalyze, loading, error }) {
   const [query, setQuery] = useState('')
   const [message, setMessage] = useState('')
   const [searching, setSearching] = useState(false)
@@ -135,6 +135,7 @@ export default function FieldPage({ location, setLocation, priorities, setPriori
             {loading ? 'Loading NASA and USDA data…' : 'Analyze this field'}
           </button>
           {loading && <p className="small muted" style={{ marginTop: 8 }}>A new field can take up to a minute the first time.</p>}
+          {error && <p className="error">{error}</p>}
         </div>
       </div>
     </>

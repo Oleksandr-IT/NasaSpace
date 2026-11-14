@@ -45,6 +45,8 @@ def _to_days(raw: dict) -> list[dict]:
         }
         if MISSING not in day.values():
             days.append(day)
+    if not days:  # над водою немає даних про ґрунт (GWETROOT = -999)
+        raise ValueError("no land data here — the point looks like water")
     return days
 
 
@@ -116,13 +118,21 @@ def climate_summary(raw: dict) -> dict:
     def series(name, digits=1):
         return [{"year": y, "value": round(per_year[y][name], digits)} for y in years]
 
+    # На півдні (Флорида, Техас) заморозків майже немає — тоді сезон без заморозків = весь рік
+    frost_years = values("frost_free_days")
+    if len(frost_years) >= len(years) / 2:
+        frost_free = round(median(frost_years))
+        last_frost, first_frost = _doy_to_text(median(last_frosts)), _doy_to_text(median(values("first_frost_doy")))
+    else:
+        frost_free, last_frost, first_frost = 365, None, None
+
     return {
         "source": f"NASA POWER {years[0]}-{years[-1]}",
         "years": len(years),
-        "frost_free_days": round(median(values("frost_free_days"))),
-        "last_spring_frost": _doy_to_text(median(last_frosts)),
-        "first_fall_frost": _doy_to_text(median(values("first_frost_doy"))),
-        "late_frost_years_per_10": round(late_frost_years / len(last_frosts) * 10),
+        "frost_free_days": frost_free,
+        "last_spring_frost": last_frost,
+        "first_fall_frost": first_frost,
+        "late_frost_years_per_10": round(late_frost_years / len(years) * 10),
         "gdd_base10": round(median(values("gdd"))),
         "season_rain_mm": round(median(values("season_rain"))),
         "heat_days_35c": round(mean(values("heat_days")), 1),

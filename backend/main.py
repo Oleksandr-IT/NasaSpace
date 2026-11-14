@@ -43,7 +43,7 @@ def get_field(lat: float, lon: float) -> dict:
     try:
         climate = climate_job.result()
     except Exception as error:  # без клімату далі рахувати не можемо
-        raise HTTPException(status_code=502, detail=f"NASA POWER is not available: {error}")
+        raise HTTPException(status_code=502, detail=f"no NASA POWER climate data ({error})")
 
     try:
         soil_info = soil_job.result()
@@ -58,6 +58,16 @@ def get_field(lat: float, lon: float) -> dict:
         warnings.append(f"Crop history not available: {error}")
 
     rotation = cdl.detect_rotation(history) if history else {"pattern": [], "label": "Unknown"}
+    if soil_info is None and not warnings:
+        warnings.append("No USDA soil data at this point. Is it farmland? Soil-based scores use default values.")
+    if not rotation["pattern"]:
+        found = sorted({h["category"] for h in history if h["category"]})
+        if found:
+            warnings.append(f"USDA maps show this point as {', '.join(found)} in 2016–2025 — no crops from our list. "
+                            "Showing a typical corn → soybean rotation as the current one.")
+        else:
+            warnings.append("No crop history found here on USDA crop maps for 2016–2025. "
+                            "Showing a typical corn → soybean rotation as the current one.")
 
     # Ціни NASS: лише якщо є ключ у .env, інакше модель бере оцінки з crops.json
     revenue = None

@@ -81,7 +81,11 @@ export default function ConditionsPage({ field, current, onNext }) {
       {field.warnings?.map((w) => <div className="banner" key={w}>{w}</div>)}
 
       <div className="grid-5">
-        <StatCard label="Frost-free season" value={`${climate.frost_free_days} days`} note={`${climate.last_spring_frost} to ${climate.first_fall_frost}`} />
+        <StatCard
+          label="Frost-free season"
+          value={climate.last_spring_frost ? `${climate.frost_free_days} days` : 'All year'}
+          note={climate.last_spring_frost ? `${climate.last_spring_frost} to ${climate.first_fall_frost}` : 'Frost is rare here'}
+        />
         <StatCard label="Growing degree days" value={climate.gdd_base10.toLocaleString('en-US')} note="base 10 °C, Apr–Oct" />
         <StatCard label="Season rainfall" value={`${climate.season_rain_mm} mm`} note="May–Sep, typical year" water />
         <StatCard label="Heat days" value={climate.heat_days_35c} note="above 35 °C per year" />
