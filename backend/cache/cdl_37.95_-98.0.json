@@ -1,0 +1,52 @@
+[
+ {
+  "year": 2016,
+  "category": "Alfalfa",
+  "crop": "alfalfa"
+ },
+ {
+  "year": 2017,
+  "category": "Alfalfa",
+  "crop": "alfalfa"
+ },
+ {
+  "year": 2018,
+  "category": "Alfalfa",
+  "crop": "alfalfa"
+ },
+ {
+  "year": 2019,
+  "category": "Winter Wheat",
+  "crop": "winter_wheat"
+ },
+ {
+  "year": 2020,
+  "category": "Winter Wheat",
+  "crop": "winter_wheat"
+ },
+ {
+  "year": 2021,
+  "category": "Sorghum",
+  "crop": "sorghum"
+ },
+ {
+  "year": 2022,
+  "category": "Winter Wheat",
+  "crop": "winter_wheat"
+ },
+ {
+  "year": 2023,
+  "category": "Sorghum",
+  "crop": "sorghum"
+ },
+ {
+  "year": 2024,
+  "category": "Winter Wheat",
+  "crop": "winter_wheat"
+ },
+ {
+  "year": 2025,
+  "category": "Other Hay/Non Alfalfa",
+  "crop": null
+ }
+]

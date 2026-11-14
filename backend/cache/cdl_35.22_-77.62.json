@@ -1,0 +1,52 @@
+[
+ {
+  "year": 2016,
+  "category": "Corn",
+  "crop": "corn"
+ },
+ {
+  "year": 2017,
+  "category": "Soybeans",
+  "crop": "soybean"
+ },
+ {
+  "year": 2018,
+  "category": "Tobacco",
+  "crop": null
+ },
+ {
+  "year": 2019,
+  "category": "Soybeans",
+  "crop": "soybean"
+ },
+ {
+  "year": 2020,
+  "category": "Soybeans",
+  "crop": "soybean"
+ },
+ {
+  "year": 2021,
+  "category": "Soybeans",
+  "crop": "soybean"
+ },
+ {
+  "year": 2022,
+  "category": "Soybeans",
+  "crop": "soybean"
+ },
+ {
+  "year": 2023,
+  "category": "Soybeans",
+  "crop": "soybean"
+ },
+ {
+  "year": 2024,
+  "category": "Soybeans",
+  "crop": "soybean"
+ },
+ {
+  "year": 2025,
+  "category": "Soybeans",
+  "crop": "soybean"
+ }
+]

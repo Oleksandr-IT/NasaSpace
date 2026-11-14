@@ -1,0 +1,14 @@
+{
+ "source": "USDA SSURGO",
+ "area": "Reno County, Kansas",
+ "map_unit": "Zellmont and Poxmash sandy loams, 0 to 3 percent slopes",
+ "name": "Zellmont",
+ "slope_pct": 1.0,
+ "hydro_group": "C",
+ "drainage": "Well drained",
+ "organic_matter_pct": 1.0,
+ "water_capacity_cm_per_cm": 0.16,
+ "k_factor": 0.28,
+ "sand_pct": 66.0,
+ "clay_pct": 12.0
+}

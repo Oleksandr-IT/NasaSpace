@@ -1,0 +1,14 @@
+{
+ "source": "USDA SSURGO",
+ "area": "Story County, Iowa",
+ "map_unit": "Nicollet clay loam, 1 to 3 percent slopes",
+ "name": "Nicollet",
+ "slope_pct": 2.0,
+ "hydro_group": "C/D",
+ "drainage": "Somewhat poorly drained",
+ "organic_matter_pct": 6.0,
+ "water_capacity_cm_per_cm": 0.18,
+ "k_factor": 0.28,
+ "sand_pct": 31.0,
+ "clay_pct": 30.0
+}

@@ -1,0 +1,492 @@
+{
+ "source": "NASA POWER 1995-2025",
+ "years": 31,
+ "frost_free_days": 245,
+ "last_spring_frost": "Mar 17",
+ "first_fall_frost": "Nov 20",
+ "late_frost_years_per_10": 0,
+ "gdd_base10": 2634,
+ "season_rain_mm": 733,
+ "heat_days_35c": 7.5,
+ "heavy_rain_days_25mm": 9.2,
+ "season_soil_wetness": 0.68,
+ "monthly": [
+  {
+   "month": 1,
+   "tavg": 5.9,
+   "rain_mm": 89,
+   "soil_wetness": 0.82
+  },
+  {
+   "month": 2,
+   "tavg": 7.8,
+   "rain_mm": 90,
+   "soil_wetness": 0.85
+  },
+  {
+   "month": 3,
+   "tavg": 11.5,
+   "rain_mm": 96,
+   "soil_wetness": 0.83
+  },
+  {
+   "month": 4,
+   "tavg": 16.4,
+   "rain_mm": 87,
+   "soil_wetness": 0.77
+  },
+  {
+   "month": 5,
+   "tavg": 21.2,
+   "rain_mm": 108,
+   "soil_wetness": 0.69
+  },
+  {
+   "month": 6,
+   "tavg": 25.3,
+   "rain_mm": 128,
+   "soil_wetness": 0.66
+  },
+  {
+   "month": 7,
+   "tavg": 27.0,
+   "rain_mm": 161,
+   "soil_wetness": 0.66
+  },
+  {
+   "month": 8,
+   "tavg": 26.2,
+   "rain_mm": 169,
+   "soil_wetness": 0.69
+  },
+  {
+   "month": 9,
+   "tavg": 23.2,
+   "rain_mm": 173,
+   "soil_wetness": 0.72
+  },
+  {
+   "month": 10,
+   "tavg": 17.7,
+   "rain_mm": 89,
+   "soil_wetness": 0.72
+  },
+  {
+   "month": 11,
+   "tavg": 11.9,
+   "rain_mm": 82,
+   "soil_wetness": 0.72
+  },
+  {
+   "month": 12,
+   "tavg": 7.9,
+   "rain_mm": 98,
+   "soil_wetness": 0.77
+  }
+ ],
+ "trends": {
+  "summer_tmax_c_per_decade": 0.23,
+  "season_rain_mm_per_decade": 13.16,
+  "soil_wetness_per_decade": 0.005
+ },
+ "series": {
+  "summer_tmax": [
+   {
+    "year": 1995,
+    "value": 29.8
+   },
+   {
+    "year": 1996,
+    "value": 29.8
+   },
+   {
+    "year": 1997,
+    "value": 30.6
+   },
+   {
+    "year": 1998,
+    "value": 31.4
+   },
+   {
+    "year": 1999,
+    "value": 32.2
+   },
+   {
+    "year": 2000,
+    "value": 30.0
+   },
+   {
+    "year": 2001,
+    "value": 30.1
+   },
+   {
+    "year": 2002,
+    "value": 32.2
+   },
+   {
+    "year": 2003,
+    "value": 28.9
+   },
+   {
+    "year": 2004,
+    "value": 30.1
+   },
+   {
+    "year": 2005,
+    "value": 31.3
+   },
+   {
+    "year": 2006,
+    "value": 31.0
+   },
+   {
+    "year": 2007,
+    "value": 32.2
+   },
+   {
+    "year": 2008,
+    "value": 32.0
+   },
+   {
+    "year": 2009,
+    "value": 30.8
+   },
+   {
+    "year": 2010,
+    "value": 32.7
+   },
+   {
+    "year": 2011,
+    "value": 33.7
+   },
+   {
+    "year": 2012,
+    "value": 30.5
+   },
+   {
+    "year": 2013,
+    "value": 29.1
+   },
+   {
+    "year": 2014,
+    "value": 30.0
+   },
+   {
+    "year": 2015,
+    "value": 31.7
+   },
+   {
+    "year": 2016,
+    "value": 31.7
+   },
+   {
+    "year": 2017,
+    "value": 30.3
+   },
+   {
+    "year": 2018,
+    "value": 30.7
+   },
+   {
+    "year": 2019,
+    "value": 32.1
+   },
+   {
+    "year": 2020,
+    "value": 30.1
+   },
+   {
+    "year": 2021,
+    "value": 30.2
+   },
+   {
+    "year": 2022,
+    "value": 32.2
+   },
+   {
+    "year": 2023,
+    "value": 31.6
+   },
+   {
+    "year": 2024,
+    "value": 31.7
+   },
+   {
+    "year": 2025,
+    "value": 30.7
+   }
+  ],
+  "season_rain": [
+   {
+    "year": 1995,
+    "value": 737.0
+   },
+   {
+    "year": 1996,
+    "value": 940.0
+   },
+   {
+    "year": 1997,
+    "value": 546.0
+   },
+   {
+    "year": 1998,
+    "value": 722.0
+   },
+   {
+    "year": 1999,
+    "value": 970.0
+   },
+   {
+    "year": 2000,
+    "value": 739.0
+   },
+   {
+    "year": 2001,
+    "value": 640.0
+   },
+   {
+    "year": 2002,
+    "value": 598.0
+   },
+   {
+    "year": 2003,
+    "value": 887.0
+   },
+   {
+    "year": 2004,
+    "value": 788.0
+   },
+   {
+    "year": 2005,
+    "value": 630.0
+   },
+   {
+    "year": 2006,
+    "value": 793.0
+   },
+   {
+    "year": 2007,
+    "value": 438.0
+   },
+   {
+    "year": 2008,
+    "value": 604.0
+   },
+   {
+    "year": 2009,
+    "value": 689.0
+   },
+   {
+    "year": 2010,
+    "value": 859.0
+   },
+   {
+    "year": 2011,
+    "value": 613.0
+   },
+   {
+    "year": 2012,
+    "value": 698.0
+   },
+   {
+    "year": 2013,
+    "value": 695.0
+   },
+   {
+    "year": 2014,
+    "value": 733.0
+   },
+   {
+    "year": 2015,
+    "value": 656.0
+   },
+   {
+    "year": 2016,
+    "value": 913.0
+   },
+   {
+    "year": 2017,
+    "value": 762.0
+   },
+   {
+    "year": 2018,
+    "value": 1047.0
+   },
+   {
+    "year": 2019,
+    "value": 587.0
+   },
+   {
+    "year": 2020,
+    "value": 888.0
+   },
+   {
+    "year": 2021,
+    "value": 736.0
+   },
+   {
+    "year": 2022,
+    "value": 646.0
+   },
+   {
+    "year": 2023,
+    "value": 736.0
+   },
+   {
+    "year": 2024,
+    "value": 895.0
+   },
+   {
+    "year": 2025,
+    "value": 714.0
+   }
+  ],
+  "season_soil": [
+   {
+    "year": 1995,
+    "value": 0.71
+   },
+   {
+    "year": 1996,
+    "value": 0.73
+   },
+   {
+    "year": 1997,
+    "value": 0.62
+   },
+   {
+    "year": 1998,
+    "value": 0.72
+   },
+   {
+    "year": 1999,
+    "value": 0.66
+   },
+   {
+    "year": 2000,
+    "value": 0.69
+   },
+   {
+    "year": 2001,
+    "value": 0.65
+   },
+   {
+    "year": 2002,
+    "value": 0.61
+   },
+   {
+    "year": 2003,
+    "value": 0.85
+   },
+   {
+    "year": 2004,
+    "value": 0.7
+   },
+   {
+    "year": 2005,
+    "value": 0.65
+   },
+   {
+    "year": 2006,
+    "value": 0.67
+   },
+   {
+    "year": 2007,
+    "value": 0.59
+   },
+   {
+    "year": 2008,
+    "value": 0.63
+   },
+   {
+    "year": 2009,
+    "value": 0.66
+   },
+   {
+    "year": 2010,
+    "value": 0.62
+   },
+   {
+    "year": 2011,
+    "value": 0.61
+   },
+   {
+    "year": 2012,
+    "value": 0.67
+   },
+   {
+    "year": 2013,
+    "value": 0.71
+   },
+   {
+    "year": 2014,
+    "value": 0.72
+   },
+   {
+    "year": 2015,
+    "value": 0.68
+   },
+   {
+    "year": 2016,
+    "value": 0.73
+   },
+   {
+    "year": 2017,
+    "value": 0.71
+   },
+   {
+    "year": 2018,
+    "value": 0.76
+   },
+   {
+    "year": 2019,
+    "value": 0.63
+   },
+   {
+    "year": 2020,
+    "value": 0.75
+   },
+   {
+    "year": 2021,
+    "value": 0.71
+   },
+   {
+    "year": 2022,
+    "value": 0.62
+   },
+   {
+    "year": 2023,
+    "value": 0.67
+   },
+   {
+    "year": 2024,
+    "value": 0.72
+   },
+   {
+    "year": 2025,
+    "value": 0.7
+   }
+  ]
+ },
+ "year_types": {
+  "dry": [
+   2007,
+   1997,
+   2019,
+   2002,
+   2008,
+   2011
+  ],
+  "wet": [
+   2020,
+   2024,
+   2016,
+   1996,
+   1999,
+   2018
+  ]
+ },
+ "dry_year_rain_mm": 564,
+ "wet_year_rain_mm": 942
+}

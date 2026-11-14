@@ -1,0 +1,14 @@
+{
+ "source": "USDA SSURGO",
+ "area": "Lenoir County, North Carolina",
+ "map_unit": "Norfolk loamy sand, 0 to 2 percent slopes",
+ "name": "Norfolk",
+ "slope_pct": 1.0,
+ "hydro_group": "B",
+ "drainage": "Well drained",
+ "organic_matter_pct": 1.5,
+ "water_capacity_cm_per_cm": 0.12,
+ "k_factor": 0.1,
+ "sand_pct": 83.0,
+ "clay_pct": 8.0
+}
