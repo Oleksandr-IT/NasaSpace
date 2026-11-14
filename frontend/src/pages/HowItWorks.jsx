@@ -1,6 +1,6 @@
-// TODO (роль 3): дописати глосарій і пояснення методу простими словами.
-
 const GLOSSARY = [
+  ['Soil moisture anomaly', 'How much wetter or drier the soil is than its usual level for that time of year. A negative anomaly in summer is an early sign of drought stress.'],
+  ['Water balance', 'Rain plus water stored in the soil, minus what the crop uses. A negative balance means the crop may run short of water without irrigation.'],
   ['Growing degree days (GDD)', 'Heat a crop gets over the season: each day adds the average temperature minus 10 °C. Crops need a certain total to mature.'],
   ['Frost-free season', 'Days between the last spring frost and the first fall frost (minimum temperature at or below 0 °C).'],
   ['Evapotranspiration (ET)', 'Water that leaves the field as vapour from soil and plant leaves. More ET means the crop needs more water.'],
@@ -24,8 +24,24 @@ export default function HowItWorks() {
           <li>We read 31 years of daily weather for your point from NASA POWER and turn it into frost dates, heat days, rainfall and trends.</li>
           <li>We read your soil (organic matter, slope, erosion factor) from USDA SSURGO.</li>
           <li>We detect your current rotation from USDA Cropland Data Layer maps of the last 10 years.</li>
+          <li>We check the model against NASA satellites: GPM IMERG rainfall since 2001 and SMAP root-zone soil moisture since 2016.</li>
           <li>We build three alternatives and score all options from 0 to 100 on six criteria, weighted by your priorities.</li>
         </ol>
+      </div>
+
+      <div className="card">
+        <h2>How the scores work</h2>
+        <ul>
+          <li><strong>Water use</strong> — crop water needs per season from FAO, compared with your May–Sep rain and the water your soil can store.</li>
+          <li><strong>Soil health</strong> — crop residue, nitrogen-fixing legumes and months with living cover.</li>
+          <li><strong>Erosion control</strong> — months the soil is covered, weighted by slope and heavy-rain days.</li>
+          <li><strong>Pest break</strong> — how many different crop families the rotation has.</li>
+          <li><strong>Income</strong> — USDA NASS yields and prices when available, otherwise a team estimate; cover crops add seed costs.</li>
+          <li><strong>Weather resilience</strong> — drought sensitivity from FAO and heat tolerance; in the dry-year scenario drought counts double.</li>
+        </ul>
+        <p className="small muted" style={{ marginTop: 8 }}>
+          The dry and wet year scenarios use the 20% driest and wettest seasons from 31 years of NASA POWER data.
+        </p>
       </div>
 
       <div className="card">

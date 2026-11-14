@@ -1,6 +1,14 @@
 import { useState } from 'react'
 import FieldMap from '../components/FieldMap'
 import { DEMO_FIELDS } from '../demoFields'
+import { geocode } from '../api'
+
+// Дані ґрунтів і культур (SSURGO, CDL) є лише для США, тому приймаємо тільки ці координати
+function insideUS(lat, lon) {
+  return lat >= 24 && lat <= 50 && lon >= -125 && lon <= -66
+}
+
+const US_ONLY = 'Field Shift works for the continental US only (USDA soil and crop maps cover only the US).'
 
 const PRIORITIES = [
   { key: 'water', title: 'Save water', hint: 'Use less water across the rotation.' },
@@ -16,19 +24,35 @@ const CONSTRAINTS = [
 ]
 
 export default function FieldPage({ location, setLocation, priorities, setPriorities, constraints, setConstraints, onAnalyze, loading }) {
-  const [coords, setCoords] = useState('')
-  const [coordsError, setCoordsError] = useState('')
+  const [query, setQuery] = useState('')
+  const [message, setMessage] = useState('')
+  const [searching, setSearching] = useState(false)
 
-  // "42.10, -93.55" -> {lat, lon}
-  function applyCoords() {
-    const parts = coords.split(',').map((p) => parseFloat(p.trim()))
-    const [lat, lon] = parts
-    if (parts.length !== 2 || isNaN(lat) || isNaN(lon) || lat < 24 || lat > 50 || lon < -125 || lon > -66) {
-      setCoordsError('Enter coordinates inside the continental US, for example: 42.10, -93.55')
+  function pick(lat, lon) {
+    if (!insideUS(lat, lon)) {
+      setMessage(US_ONLY)
       return
     }
-    setCoordsError('')
-    setLocation({ lat, lon })
+    setMessage('')
+    setLocation({ lat: +lat.toFixed(2), lon: +lon.toFixed(2) })
+  }
+
+  // Пошук: "42.10, -93.55" — координати, інакше — назва місця або адреса
+  async function search() {
+    const parts = query.split(',').map((p) => Number(p.trim()))
+    if (parts.length === 2 && parts.every((n) => !isNaN(n) && query.trim() !== '')) {
+      pick(parts[0], parts[1])
+      return
+    }
+    setSearching(true)
+    try {
+      const place = await geocode(query)
+      if (!place) setMessage('Place not found. Try a town and state, for example: Ames, Iowa')
+      else pick(place.lat, place.lon)
+    } catch {
+      setMessage('Search is not available right now. Paste coordinates instead, for example: 42.10, -93.55')
+    }
+    setSearching(false)
   }
 
   const activeDemo = DEMO_FIELDS.find((d) => d.lat === location.lat && d.lon === location.lon)
@@ -43,20 +67,25 @@ export default function FieldPage({ location, setLocation, priorities, setPriori
 
       <div className="grid-2">
         <div>
-          <input
-            className="input"
-            placeholder="Paste coordinates, e.g. 42.10, -93.55 (press Enter)"
-            value={coords}
-            onChange={(e) => setCoords(e.target.value)}
-            onKeyDown={(e) => e.key === 'Enter' && applyCoords()}
-          />
-          {coordsError && <p className="error">{coordsError}</p>}
+          <div className="search-row">
+            <input
+              className="input"
+              placeholder="Search a place or paste coordinates, e.g. Ames, Iowa or 42.10, -93.55"
+              value={query}
+              onChange={(e) => setQuery(e.target.value)}
+              onKeyDown={(e) => e.key === 'Enter' && search()}
+            />
+            <button className="button secondary" onClick={search} disabled={searching || !query.trim()}>
+              {searching ? 'Searching…' : 'Search'}
+            </button>
+          </div>
+          {message && <p className="error">{message}</p>}
           <div className="chips">
             {DEMO_FIELDS.map((demo) => (
               <button
                 key={demo.id}
                 className={'chip' + (activeDemo?.id === demo.id ? ' active' : '')}
-                onClick={() => setLocation({ lat: demo.lat, lon: demo.lon })}
+                onClick={() => pick(demo.lat, demo.lon)}
               >
                 {demo.label}
               </button>
@@ -67,7 +96,7 @@ export default function FieldPage({ location, setLocation, priorities, setPriori
               lat={location.lat}
               lon={location.lon}
               label={label}
-              onPick={(lat, lon) => setLocation({ lat: +lat.toFixed(2), lon: +lon.toFixed(2) })}
+              onPick={pick}
             />
           </div>
         </div>

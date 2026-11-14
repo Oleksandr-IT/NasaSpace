@@ -1,4 +1,5 @@
 import { Bar, CartesianGrid, ComposedChart, Line, LineChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts'
+import SatelliteCard from '../components/SatelliteCard'
 
 const MONTH_NAMES = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
 
@@ -142,6 +143,10 @@ export default function ConditionsPage({ field, current, onNext }) {
             </div>
           ))}
         </div>
+      </div>
+
+      <div style={{ marginTop: 24 }}>
+        <SatelliteCard lat={location.lat} lon={location.lon} powerRain={climate.series.season_rain} />
       </div>
 
       <div className="cta">

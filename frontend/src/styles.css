@@ -47,7 +47,7 @@ a { color: var(--green); }
 .link-button { background: none; border: none; font: inherit; color: var(--green); cursor: pointer; padding: 0; }
 
 /* ---------- Сторінка ---------- */
-.page { padding: 32px 0 48px; }
+.page { padding-top: 32px; padding-bottom: 48px; }
 .page-title { margin-bottom: 24px; }
 .page-title-row { display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 24px; gap: 16px; }
 
@@ -148,9 +148,35 @@ a { color: var(--green); }
 /* ---------- Футер ---------- */
 .footer { border-top: 1px solid var(--border); padding: 24px 0 32px; color: var(--muted); font-size: 13px; }
 
-/* Вузькі екрани: колонки одна під одною */
+.search-row { display: flex; gap: 8px; }
+.search-row .button { white-space: nowrap; }
+.grid-2-equal { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; }
+
+/* Планшет: колонки одна під одною */
 @media (max-width: 900px) {
-  .grid-2, .grid-3, .grid-4, .details-grid { grid-template-columns: 1fr; }
+  .grid-2, .grid-2-equal, .grid-3, .details-grid { grid-template-columns: 1fr; }
+  .grid-4 { grid-template-columns: repeat(2, 1fr); }
   .grid-5 { grid-template-columns: repeat(2, 1fr); }
   .steps { display: none; }
+  .sticky { position: static; }
+}
+
+/* Телефон */
+@media (max-width: 600px) {
+  .container { padding: 0 16px; }
+  .page { padding-top: 24px; padding-bottom: 32px; }
+  h1 { font-size: 24px; }
+  .card { padding: 16px; }
+  .grid-4 { grid-template-columns: 1fr; }
+  .grid-5 { grid-template-columns: 1fr 1fr; gap: 8px; }
+  .stat-value { font-size: 22px; }
+  .map { height: 300px; }
+  .map-footer, .page-title-row, .cta { flex-direction: column; align-items: flex-start; }
+  .cta .button { width: 100%; }
+  .search-row { flex-direction: column; }
+  .evidence-row { flex-direction: column; gap: 4px; }
+  .cover-band, .legend { margin-left: 0 !important; margin-right: 0; }
+  .legend { flex-wrap: wrap; gap: 8px 16px; }
+  .segmented { display: flex; flex-wrap: wrap; }
+  .segmented button { flex: 1; }
 }
