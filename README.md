@@ -13,10 +13,11 @@ backend/            FastAPI (Python)
     soil.py         USDA SSURGO: ґрунт у точці
     cdl.py          USDA Cropland Data Layer: що росло на полі 2016–2025, поточна сівозміна
     strategies.py   генерація 3 альтернатив, бали 0–100, пояснення
-    earthdata.py    NASA Earthdata (SMAP, IMERG) — заготовка на день 2
+    earthdata.py    NASA Earthdata: опади GPM IMERG (з 2001) і вологість ґрунту SMAP (з 2016) через OPeNDAP
+    nass.py         USDA NASS: врожайність і ціни (вмикається, якщо є NASS_API_KEY)
     cache.py        кеш відповідей у backend/cache/
   data/
-    crops.json      характеристики культур (оцінки 1–5, треба перевірити)
+    crops.json      характеристики культур: вода і посуха — FAO, решта — оцінки команди
     demo_fields.json
   cache/            збережені дані для 3 демо-полів (демо працює без інтернету)
 frontend/           React + Vite
@@ -53,8 +54,14 @@ npm run dev
 
 Відкрити http://localhost:5173. Якщо бекенд не запущений, сайт покаже мок-дані для Айови.
 
-**3. Токен NASA Earthdata** (лише для SMAP/IMERG, день 2): створити файл `.env` у корені проєкту з рядком
-`EARTHDATA_TOKEN=...`. Файл **не комітимо**, передаємо особисто. Перевірка: `cd backend && python -m services.earthdata`.
+**3. Ключі** — файл `.env` у корені проєкту. Його **не комітимо**, передаємо особисто:
+
+```
+EARTHDATA_TOKEN=...   # NASA SMAP та IMERG. Перевірка: cd backend && python -m services.earthdata
+NASS_API_KEY=...      # необов'язково: справжні ціни USDA. Ключ: https://quickstats.nass.usda.gov/api
+```
+
+Без `EARTHDATA_TOKEN` сайт працює, але картка «Satellite check» буде порожня (крім демо-полів — для них дані вже в кеші).
 
 ## API
 
@@ -62,6 +69,8 @@ npm run dev
 |---|---|---|
 | GET | `/api/field?lat=42.1&lon=-93.55` | клімат, ґрунт, поточна сівозміна |
 | POST | `/api/strategies` | 4 стратегії з балами, календарем і поясненнями |
+| GET | `/api/satellite?lat=42.1&lon=-93.55` | опади IMERG і вологість SMAP за роками (нове поле — ~2 хв) |
+| GET | `/api/geocode?q=Ames, Iowa` | координати місця (OpenStreetMap) |
 | GET | `/api/demo-fields` | 3 демо-поля |
 
 Тіло для `/api/strategies`:
@@ -83,12 +92,18 @@ npm run dev
 | NASA GIBS | шари SMAP, MODIS NDVI, IMERG на карті (картинки) | без ключа |
 | USDA SSURGO (Soil Data Access) | ґрунт | без ключа |
 | USDA Cropland Data Layer | культури по роках | без ключа |
-| NASA Earthdata (SMAP, IMERG) | числові дані супутників | токен у `.env` |
+| NASA GPM IMERG, NASA SMAP L4 | справжні супутникові числа: опади і вологість ґрунту | токен у `.env` |
+| FAO (Training Manual No. 3, табл. 6, 14) | потреба культур у воді, чутливість до посухи | у `crops.json` |
+| USDA NASS QuickStats | врожайність і ціни | ключ у `.env` (необов'язково) |
+| OpenStreetMap Nominatim | пошук місця за назвою | без ключа |
 
-## Що далі (TODO по ролях)
+## Що є оцінкою команди, а не даними
 
-- **Роль 1 — дані клімату:** SMAP/IMERG через `services/earthdata.py` для демо-полів; порівняти з POWER.
-- **Роль 2 — ґрунт і API:** деплой бекенду (Render), обробка помилок, нові категорії CDL.
-- **Роль 3 — модель:** перевірити значення в `data/crops.json` і додати джерела; уточнити формули балів у `strategies.py` (зараз варіант A з покривною культурою майже завжди перемагає); глосарій у `HowItWorks.jsx`.
-- **Роль 4 — фронтенд:** пошук адреси, стан завантаження і помилок, деплой (Vercel або Netlify).
-- **Роль 5 — дизайн:** полірування екранів 3–4, мобільна версія, скріншоти і відео для подачі.
+Чесно кажемо журі: у `crops.json` поля в `estimated` (стійкість до спеки, глибина коріння, рештки,
+дохідність без NASS), дати сівби/збору і вартість покривних культур — наші оцінки. Формули балів —
+прості правила, не перевірені агрономами.
+
+## Що лишилось
+
+- Деплой: бекенд (Render), фронтенд (Vercel або Netlify).
+- Презентація, відео, сторінка проєкту на Space Apps.
