@@ -1,0 +1,156 @@
+/* Кольори та розміри взяті з макету Figma (design/FIGMA.md) */
+:root {
+  --bg: #f5f4f0;
+  --card: #ffffff;
+  --border: #e2ded5;
+  --text: #1f2421;
+  --muted: #5c625d;
+  --green: #3f6b3a;
+  --green-light: #e8efe6;
+  --amber: #b7791f;
+  --amber-light: #fbf3e4;
+  --red: #a1392b;
+  --blue: #2f6690;
+  --bare: #d9c8a6;
+  --radius: 6px;
+}
+
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'IBM Plex Sans', 'Source Sans 3', system-ui, sans-serif;
+  font-size: 16px;
+  line-height: 1.5;
+}
+
+h1 { font-size: 28px; margin: 0 0 4px; font-weight: 600; }
+h2 { font-size: 20px; margin: 0 0 4px; font-weight: 600; }
+h3 { font-size: 16px; margin: 0 0 4px; font-weight: 600; }
+p { margin: 0; }
+a { color: var(--green); }
+
+.container { max-width: 1200px; margin: 0 auto; padding: 0 24px; }
+.muted { color: var(--muted); }
+.small { font-size: 13px; }
+
+/* ---------- Верхня панель ---------- */
+.header { background: var(--card); border-bottom: 1px solid var(--border); }
+.header .container { display: flex; align-items: center; height: 56px; gap: 32px; }
+.logo { font-weight: 600; font-size: 18px; cursor: pointer; }
+.steps { display: flex; gap: 16px; margin: 0 auto; color: var(--muted); }
+.step { background: none; border: none; font: inherit; color: inherit; padding: 16px 0; cursor: pointer; border-bottom: 2px solid transparent; }
+.step.active { color: var(--green); font-weight: 600; border-bottom-color: var(--green); }
+.step:disabled { cursor: default; opacity: 0.6; }
+.link-button { background: none; border: none; font: inherit; color: var(--green); cursor: pointer; padding: 0; }
+
+/* ---------- Сторінка ---------- */
+.page { padding: 32px 0 48px; }
+.page-title { margin-bottom: 24px; }
+.page-title-row { display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 24px; gap: 16px; }
+
+.card { background: var(--card); border: 1px solid var(--border); border-radius: var(--radius); padding: 24px; }
+.card-subtitle { color: var(--muted); font-size: 13px; margin-bottom: 16px; }
+
+.grid-2 { display: grid; grid-template-columns: 3fr 2fr; gap: 24px; }
+.grid-5 { display: grid; grid-template-columns: repeat(5, 1fr); gap: 16px; margin-bottom: 24px; }
+.grid-4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; }
+.grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; }
+.stack { display: flex; flex-direction: column; gap: 24px; }
+
+.button {
+  background: var(--green); color: #fff; border: none; border-radius: var(--radius);
+  padding: 12px 24px; font: inherit; font-weight: 600; cursor: pointer;
+}
+.button:disabled { opacity: 0.6; cursor: wait; }
+.button.full { width: 100%; }
+.button.secondary { background: var(--card); color: var(--green); border: 1px solid var(--green); }
+
+.input {
+  width: 100%; padding: 12px 16px; font: inherit; border: 1px solid var(--border);
+  border-radius: var(--radius); background: var(--card);
+}
+
+.chips { display: flex; gap: 8px; margin: 12px 0; flex-wrap: wrap; }
+.chip {
+  border: 1px solid var(--border); background: var(--card); border-radius: var(--radius);
+  padding: 6px 16px; font: inherit; font-size: 14px; color: var(--muted); cursor: pointer;
+}
+.chip.active { border-color: var(--green); background: var(--green-light); color: var(--green); font-weight: 600; }
+
+.banner { background: var(--amber-light); border-left: 3px solid var(--amber); padding: 8px 16px; margin-bottom: 16px; font-size: 14px; }
+.error { color: var(--red); margin-top: 8px; font-size: 14px; }
+
+/* ---------- Екран 1 ---------- */
+.map-card { padding: 0; overflow: hidden; }
+.map { height: 420px; }
+.map-footer { display: flex; justify-content: space-between; align-items: center; padding: 12px 16px; border-top: 1px solid var(--border); gap: 16px; }
+.layer-select { font: inherit; font-size: 14px; padding: 4px 8px; border: 1px solid var(--border); border-radius: var(--radius); background: var(--card); }
+
+.slider-row { margin-bottom: 16px; }
+.slider-head { display: flex; justify-content: space-between; }
+.slider-row input[type='range'] { width: 100%; accent-color: var(--green); }
+.toggle-row { display: flex; justify-content: space-between; align-items: center; padding: 8px 0; }
+.toggle-row input { width: 20px; height: 20px; accent-color: var(--green); }
+
+/* ---------- Екран 2 ---------- */
+.stat-label { color: var(--muted); font-size: 13px; }
+.stat-value { font-size: 28px; font-weight: 600; margin: 4px 0; }
+.stat-value.water { color: var(--blue); }
+.stat-note { color: var(--muted); font-size: 13px; }
+
+.cover-band { display: flex; height: 10px; margin: 8px 0 8px 60px; margin-right: 60px; }
+.legend { display: flex; gap: 24px; font-size: 13px; color: var(--muted); }
+.legend-dot { display: inline-block; width: 12px; height: 12px; margin-right: 6px; vertical-align: -1px; }
+
+.watch-item { border-left: 3px solid var(--amber); padding-left: 16px; margin-bottom: 16px; }
+.watch-item.high { border-left-color: var(--red); }
+
+.cta { display: flex; justify-content: space-between; align-items: center; margin-top: 32px; }
+
+/* ---------- Екран 3 ---------- */
+.segmented { display: inline-flex; border: 1px solid var(--border); border-radius: var(--radius); overflow: hidden; }
+.segmented button { background: var(--card); border: none; padding: 8px 16px; font: inherit; font-size: 14px; cursor: pointer; color: var(--muted); }
+.segmented button + button { border-left: 1px solid var(--border); }
+.segmented button.active { background: var(--green-light); color: var(--green); font-weight: 600; }
+
+.option-card { display: flex; flex-direction: column; gap: 16px; }
+.option-card.best { border: 2px solid var(--green); }
+.tag { display: inline-block; font-size: 12px; padding: 2px 8px; border-radius: var(--radius); background: var(--border); color: var(--muted); }
+.tag.green { background: var(--green-light); color: var(--green); font-weight: 600; }
+.total-score { font-size: 36px; font-weight: 600; }
+.total-score span { font-size: 16px; color: var(--muted); font-weight: 400; }
+
+.score-row { margin-bottom: 8px; font-size: 13px; }
+.score-row .score-head { display: flex; justify-content: space-between; }
+.score-track { height: 6px; background: var(--bg); border-radius: 3px; }
+.score-fill { height: 6px; background: var(--green); border-radius: 3px; }
+
+.calendar { font-size: 11px; }
+.calendar-row { display: flex; align-items: center; margin-bottom: 4px; }
+.calendar-label { width: 28px; color: var(--muted); }
+.calendar-track { position: relative; flex: 1; height: 16px; background: var(--bg); }
+.calendar-bar { position: absolute; top: 2px; height: 12px; border-radius: 2px; }
+.calendar-bar.cover { top: 5px; height: 6px; }
+.calendar-months { display: flex; margin-left: 28px; color: var(--muted); }
+.calendar-months span { flex: 1; text-align: center; }
+
+/* ---------- Екран 4 ---------- */
+.details-grid { display: grid; grid-template-columns: 2fr 1fr; gap: 24px; align-items: start; }
+.sticky { position: sticky; top: 24px; }
+.section + .section { margin-top: 24px; }
+.section ul { margin: 8px 0 0; padding-left: 20px; }
+.evidence-row { display: flex; justify-content: space-between; gap: 16px; padding: 8px 0; border-bottom: 1px solid var(--border); }
+.check-local { background: var(--amber-light); border-radius: var(--radius); padding: 16px; }
+
+/* ---------- Футер ---------- */
+.footer { border-top: 1px solid var(--border); padding: 24px 0 32px; color: var(--muted); font-size: 13px; }
+
+/* Вузькі екрани: колонки одна під одною */
+@media (max-width: 900px) {
+  .grid-2, .grid-3, .grid-4, .details-grid { grid-template-columns: 1fr; }
+  .grid-5 { grid-template-columns: repeat(2, 1fr); }
+  .steps { display: none; }
+}
