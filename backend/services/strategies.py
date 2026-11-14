@@ -1,25 +1,44 @@
-"""Перша проста версія моделі: генеруємо 3 альтернативи до поточної сівозміни,
+"""Проста модель: генеруємо 3 альтернативи до поточної сівозміни,
 рахуємо бали 0–100 за 6 критеріями і пишемо пояснення.
 
 Як зберігаємо сівозміну: список років, у кожному році — культури, які ЗБИРАЮТЬ (або
 закінчують, для покривних) у цьому році. Так само рахує USDA CDL.
 Приклад: [["corn"], ["soybean"]] = кукурудза -> соя.
 
-TODO (роль 3): уточнити формули балів і значення в data/crops.json.
+Звідки числа: потреба у воді і чутливість до посухи — FAO (див. data/crops.json, "_sources"),
+решта характеристик культур — оцінки команди ("estimated").
 """
 import json
 from pathlib import Path
+from statistics import mean
 
 CROPS = json.loads((Path(__file__).resolve().parent.parent / "data" / "crops.json").read_text(encoding="utf-8"))
-CROPS.pop("_note")
+CROPS.pop("_sources")
 
 DROUGHT_SWAP = {"corn": "sorghum", "soybean": "sunflower", "cotton": "sorghum"}
+
+# FAO: чутливість до посухи -> стійкість 1..5
+TOLERANCE = {"low": 5, "low-medium": 4, "medium": 3, "medium-high": 2, "high": 1}
+
+COVER_CROP_INCOME_PENALTY = 10  # насіння і сівба покривної культури (оцінка команди)
+
+
+def attr(crop_id: str, key: str):
+    """Характеристика культури: спочатку з джерел, потім з оцінок команди."""
+    crop = CROPS[crop_id]
+    return crop[key] if key in crop else crop["estimated"][key]
+
+
+def water_need(crop_id: str) -> float:
+    """Середина діапазону FAO, мм за сезон."""
+    low, high = CROPS[crop_id]["water_need_mm"]
+    return (low + high) / 2
 
 
 # ---------- Календар і покриття поля ----------
 
 def _month(mm_dd: str) -> float:
-    """'05-15' -> 5.5 (місяць з дробом, щоб малювати смуги на календарі)."""
+    """'05-15' -> 5.45 (місяць з дробом, щоб малювати смуги на календарі)."""
     month, day = mm_dd.split("-")
     return int(month) + (int(day) - 1) / 31
 
@@ -96,36 +115,47 @@ def drought_tolerant(years, field_gdd, livestock):
     if livestock:
         return [list(crops) for crops in years] + [["alfalfa"], ["alfalfa"]]
     mains = _mains(years)
-    thirsty = max(mains, key=lambda c: CROPS[c]["water_need"])
+    thirsty = max(mains, key=water_need)
     swap = DROUGHT_SWAP.get(thirsty)
     if swap and CROPS[swap]["gdd_need"] <= field_gdd and swap not in mains:
         if len(years) == 1:  # монокультура: чергуємо стару культуру з новою, а не міняємо одну на одну
             return [[swap], list(years[0])]
         return [[swap if c == thirsty else c for c in crops] for crops in years]
-    return [list(crops) for crops in years] + [["sunflower"]]
+    return [list(crops) for crops in years] + [["sorghum" if "sorghum" not in mains else "sunflower"]]
 
 
 # ---------- Бали ----------
 
-def _average(years, key):
-    mains = _mains(years)
-    return sum(CROPS[c][key] for c in mains) / len(mains)
+def season_rain(climate, scenario):
+    return {"dry": climate["dry_year_rain_mm"], "wet": climate["wet_year_rain_mm"]}.get(scenario, climate["season_rain_mm"])
+
+
+def soil_storage_mm(soil) -> float:
+    """Скільки води ґрунт може запасти в метровому шарі: AWC (см/см) x 100 см x 10 = мм."""
+    awc = (soil or {}).get("water_capacity_cm_per_cm") or 0.15
+    return awc * 1000
 
 
 def score(years, field, scenario, constraints) -> dict:
     climate, soil = field["climate"], field.get("soil") or {}
-    rain = {"dry": climate["dry_year_rain_mm"], "wet": climate["wet_year_rain_mm"]}.get(scenario, climate["season_rain_mm"])
+    rain = season_rain(climate, scenario)
     cover = covered_share(years)
     mains = _mains(years)
+    cover_years = sum(1 for crops in years if any(CROPS[c]["kind"] == "cover" for c in crops)) / len(years)
 
-    # Вода: менша потреба культур = вищий бал; у сухий рік без зрошення штраф більший
-    water = 100 - (_average(years, "water_need") - 1) * 20
-    if rain < 450 and not constraints.get("irrigation"):
-        water -= (450 - rain) / 5
+    # Вода 1: скільки води сівозміна споживає за рік (FAO, мм). 400 мм = 100 балів, 1200 мм = 0
+    yearly_need = mean(sum(water_need(c) for c in crops) for crops in years)
+    water = 100 - (yearly_need - 400) / 8
+    # Вода 2: чи вистачає опадів сезону + запасу в ґрунті головній культурі (без зрошення)
+    if not constraints.get("irrigation"):
+        available = rain + soil_storage_mm(soil)
+        deficit = mean(max(0, water_need(c) - available) for c in mains)
+        water -= deficit / 5
 
     # Здоров'я ґрунту: рештки + бобові (азот) + покриття поля
     legume_years = sum(1 for crops in years if any(CROPS[c]["n_fixing"] for c in crops)) / len(years)
-    soil_health = _average(years, "residue") * 8 + legume_years * 30 + cover * 30
+    residue = mean(attr(c, "residue") for c in mains)
+    soil_health = residue * 8 + legume_years * 30 + cover * 30
 
     # Ерозія: чим довше поле вкрите, тим краще; на схилі й при зливах це важливіше
     risk = 1 + (soil.get("slope_pct") or 0) / 10 + climate["heavy_rain_days_25mm"] / 20
@@ -135,12 +165,17 @@ def score(years, field, scenario, constraints) -> dict:
     families = len({CROPS[c]["family"] for crops in years for c in crops})
     pest_break = {1: 20, 2: 60, 3: 80}.get(families, 95)
 
-    income = _average(years, "income") * 20
+    # Дохід: справжні ціни NASS ($1000/acre = 100 балів), якщо є; інакше оцінка команди.
+    # Мінус витрати на покривні культури і техніку для зернових.
+    revenue = (field.get("revenue") or {}).get("revenue_per_acre", {})
+    income = mean(revenue[c] / 10 if c in revenue else attr(c, "income") * 20 for c in mains)
+    income -= cover_years * COVER_CROP_INCOME_PENALTY
     if not constraints.get("small_grain_equipment") and any(CROPS[c]["small_grain"] for c in mains):
         income -= 10  # треба орендувати або купити техніку
 
-    # Погодна стійкість: у сухий рік посуха важить удвічі більше
-    drought, heat = _average(years, "drought_tolerance"), _average(years, "heat_tolerance")
+    # Погодна стійкість: посуха (FAO) і спека (оцінка); у сухий рік посуха важить удвічі більше
+    drought = mean(TOLERANCE[CROPS[c]["drought_sensitivity"]] for c in mains)
+    heat = mean(attr(c, "heat_tolerance") for c in mains)
     climate_risk = ((drought * 2 + heat) / 3 if scenario == "dry" else (drought + heat) / 2) * 20
 
     scores = {"water": water, "soil_health": soil_health, "erosion": erosion,
@@ -157,19 +192,37 @@ def total(scores, priorities) -> int:
 
 # ---------- Пояснення ----------
 
-def explain(kind, years, current_years, field) -> dict:
-    climate, soil = field["climate"], field.get("soil") or {}
+def _evidence(field, current_years, scenario):
+    climate, soil, sat = field["climate"], field.get("soil") or {}, field.get("satellite")
     bare_now = round((1 - covered_share(current_years)) * 12)
-    bare_new = round((1 - covered_share(years)) * 12)
     dry_year = climate["year_types"]["dry"][0]
-    evidence = [
+    thirsty = max(_mains(current_years), key=water_need)
+    low, high = CROPS[thirsty]["water_need_mm"]
+    items = [
         {"text": f"Field is bare about {bare_now} months a year in the current rotation", "source": "USDA CDL + crop calendar", "confidence": "Model"},
+        {"text": f"{CROPS[thirsty]['name']} needs {low}–{high} mm of water per season; this field gets {season_rain(climate, scenario)} mm in May–Sep plus about {round(soil_storage_mm(soil))} mm stored in the soil",
+         "source": "FAO + NASA POWER + SSURGO", "confidence": "Reference"},
         {"text": f"{climate['heavy_rain_days_25mm']} days a year with more than 25 mm of rain", "source": "NASA POWER", "confidence": "Model"},
         {"text": f"Dry years like {dry_year} brought {climate['dry_year_rain_mm']} mm in May–Sep (typical: {climate['season_rain_mm']} mm)", "source": "NASA POWER", "confidence": "Model"},
     ]
     if soil:
-        evidence.append({"text": f"{soil['name']} soil: {soil['organic_matter_pct']}% organic matter, {soil['slope_pct']}% slope", "source": "USDA SSURGO", "confidence": "Measured"})
+        items.append({"text": f"{soil['name']} soil: {soil['organic_matter_pct']}% organic matter, {soil['slope_pct']}% slope", "source": "USDA SSURGO", "confidence": "Measured"})
+    revenue = (field.get("revenue") or {}).get("revenue_per_acre", {})
+    known = [c for c in dict.fromkeys(_mains(current_years)) if c in revenue]
+    if known:
+        text = ", ".join(f"{CROPS[c]['name'].lower()} ${revenue[c]}" for c in known)
+        items.append({"text": f"Typical gross income per acre in {field['revenue']['state']}: {text} (state yield × US price, 2020+)",
+                      "source": "USDA NASS", "confidence": "Measured"})
+    if sat and sat.get("smap_season_soil"):
+        driest = min(sat["smap_season_soil"], key=lambda r: r["value"])
+        items.append({"text": f"Satellite soil moisture was lowest in {driest['year']}: {driest['value']} m³/m³ in May–Sep (root zone)", "source": "NASA SMAP", "confidence": "Measured"})
+    return items
 
+
+def explain(kind, years, current_years, field, scenario) -> dict:
+    bare_now = round((1 - covered_share(current_years)) * 12)
+    bare_new = round((1 - covered_share(years)) * 12)
+    dry_year = field["climate"]["year_types"]["dry"][0]
     texts = {
         "current": {
             "why": "This is what the field has grown in recent years, detected from USDA Cropland Data Layer maps.",
@@ -180,8 +233,8 @@ def explain(kind, years, current_years, field) -> dict:
         "cover": {
             "why": f"Adding a winter cover crop cuts bare soil from about {bare_now} to {bare_new} months a year, when heavy rain hits uncovered ground.",
             "benefits": ["Less soil loss in spring storms", "More organic matter over time", "Roots improve water infiltration"],
-            "gaps": ["We do not know your seeding equipment or herbicide program"],
-            "check_locally": ["Cover crop termination timing before planting", "Possible yield drag for corn after rye"],
+            "gaps": ["We do not know your seeding equipment or herbicide program", "Cover crop seed costs vary by region"],
+            "check_locally": ["Cover crop termination timing before planting", "Spring water use by the cover crop in dry years", "Possible yield drag for the crop planted right after rye"],
         },
         "diverse": {
             "why": "A third crop breaks pest and disease cycles and adds a legume or small grain that feeds the soil.",
@@ -190,8 +243,8 @@ def explain(kind, years, current_years, field) -> dict:
             "check_locally": ["Equipment for small grains", "Grain storage and markets nearby"],
         },
         "drought": {
-            "why": f"Crops that need less water hold up better in dry years like {dry_year}.",
-            "benefits": ["Lower water demand", "Better heat tolerance"],
+            "why": f"Crops that need less water and are less sensitive to drought (FAO) hold up better in dry years like {dry_year}.",
+            "benefits": ["Lower water demand", "Better drought and heat tolerance"],
             "gaps": ["Market price and contracts for the new crop"],
             "check_locally": ["Seed varieties suited to your area", "Feed or grain buyers within hauling distance"],
         },
@@ -199,10 +252,10 @@ def explain(kind, years, current_years, field) -> dict:
             "why": "Alfalfa grows deep roots, fixes nitrogen and gives forage for livestock.",
             "benefits": ["Forage for your animals", "Deep roots and nitrogen for the next crop"],
             "gaps": ["Hay prices and storage"],
-            "check_locally": ["Alfalfa needs a lot of water in dry summers"],
+            "check_locally": ["Alfalfa needs 800–1600 mm of water per season (FAO) — check irrigation"],
         },
     }
-    return {**texts[kind], "evidence": evidence}
+    return {**texts[kind], "evidence": _evidence(field, current_years, scenario)}
 
 
 # ---------- Головна функція ----------
@@ -230,7 +283,7 @@ def build_strategies(field, priorities, constraints, scenario="normal") -> list[
             "scores": scores,
             "bare_months_per_year": round((1 - covered_share(years)) * 12),
             "calendar": calendar(years),
-            "explanation": explain(kind, years, current, field),
+            "explanation": explain(kind, years, current, field, scenario),
         })
     best = max(result, key=lambda s: s["total_score"])
     for strategy in result:
