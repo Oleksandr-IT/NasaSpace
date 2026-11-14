@@ -1,0 +1,21 @@
+# Secrets
+.env
+
+# Python
+__pycache__/
+*.pyc
+.venv/
+venv/
+
+# Node
+node_modules/
+dist/
+
+# Large downloaded data
+data/raw/
+
+# Cache: commit only the 3 demo fields, so the demo works offline
+backend/cache/*
+!backend/cache/*_42.1_-93.55.json
+!backend/cache/*_37.95_-98.0.json
+!backend/cache/*_35.22_-77.62.json
