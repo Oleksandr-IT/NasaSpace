@@ -1,0 +1,12 @@
+{
+ "state": "Iowa",
+ "revenue_per_acre": {
+  "corn": 999,
+  "soybean": 707,
+  "spring_wheat": 228,
+  "oats": 310,
+  "sorghum": 290,
+  "alfalfa": 516
+ },
+ "source": "USDA NASS QuickStats 2020+"
+}

@@ -4,6 +4,7 @@
 Ключ не потрібен.
 """
 import re
+from concurrent.futures import ThreadPoolExecutor
 
 import requests
 from pyproj import Transformer
@@ -37,11 +38,11 @@ def fetch_year(x: float, y: float, year: int) -> str | None:
 
 def fetch_history(lat: float, lon: float) -> list[dict]:
     x, y = _to_albers.transform(lon, lat)
-    history = []
-    for year in YEARS:
-        category = fetch_year(x, y, year)
-        history.append({"year": year, "category": category, "crop": CDL_TO_CROP.get(category)})
-    return history
+    # 10 запитів паралельно замість по черзі — у кілька разів швидше
+    with ThreadPoolExecutor(max_workers=5) as pool:
+        categories = list(pool.map(lambda year: fetch_year(x, y, year), YEARS))
+    return [{"year": year, "category": category, "crop": CDL_TO_CROP.get(category)}
+            for year, category in zip(YEARS, categories)]
 
 
 def detect_rotation(history: list[dict]) -> dict:

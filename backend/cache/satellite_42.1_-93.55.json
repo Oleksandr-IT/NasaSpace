@@ -1,0 +1,150 @@
+{
+ "imerg_season_rain": [
+  {
+   "year": 2001,
+   "value": 610
+  },
+  {
+   "year": 2002,
+   "value": 548
+  },
+  {
+   "year": 2003,
+   "value": 511
+  },
+  {
+   "year": 2004,
+   "value": 640
+  },
+  {
+   "year": 2005,
+   "value": 593
+  },
+  {
+   "year": 2006,
+   "value": 547
+  },
+  {
+   "year": 2007,
+   "value": 710
+  },
+  {
+   "year": 2008,
+   "value": 831
+  },
+  {
+   "year": 2009,
+   "value": 544
+  },
+  {
+   "year": 2010,
+   "value": 997
+  },
+  {
+   "year": 2011,
+   "value": 504
+  },
+  {
+   "year": 2012,
+   "value": 260
+  },
+  {
+   "year": 2013,
+   "value": 516
+  },
+  {
+   "year": 2014,
+   "value": 720
+  },
+  {
+   "year": 2015,
+   "value": 745
+  },
+  {
+   "year": 2016,
+   "value": 684
+  },
+  {
+   "year": 2017,
+   "value": 418
+  },
+  {
+   "year": 2018,
+   "value": 804
+  },
+  {
+   "year": 2019,
+   "value": 643
+  },
+  {
+   "year": 2020,
+   "value": 486
+  },
+  {
+   "year": 2021,
+   "value": 360
+  },
+  {
+   "year": 2022,
+   "value": 491
+  },
+  {
+   "year": 2023,
+   "value": 430
+  },
+  {
+   "year": 2024,
+   "value": 635
+  },
+  {
+   "year": 2025,
+   "value": 703
+  }
+ ],
+ "smap_season_soil": [
+  {
+   "year": 2016,
+   "value": 0.29
+  },
+  {
+   "year": 2017,
+   "value": 0.274
+  },
+  {
+   "year": 2018,
+   "value": 0.311
+  },
+  {
+   "year": 2019,
+   "value": 0.306
+  },
+  {
+   "year": 2020,
+   "value": 0.276
+  },
+  {
+   "year": 2021,
+   "value": 0.233
+  },
+  {
+   "year": 2022,
+   "value": 0.286
+  },
+  {
+   "year": 2023,
+   "value": 0.266
+  },
+  {
+   "year": 2024,
+   "value": 0.306
+  },
+  {
+   "year": 2025,
+   "value": 0.318
+  }
+ ],
+ "sources": {
+  "imerg": "NASA GPM IMERG V07 monthly, 0.1° (~10 km), via GES DISC OPeNDAP",
+  "smap": "NASA SMAP L4 root-zone soil moisture v008, 9 km, via Earthdata Cloud OPeNDAP"
+ }
+}

@@ -1,0 +1,14 @@
+{
+ "state": "North Carolina",
+ "revenue_per_acre": {
+  "corn": 641,
+  "soybean": 451,
+  "winter_wheat": 400,
+  "spring_wheat": 174,
+  "oats": 265,
+  "sorghum": 253,
+  "cotton": 732,
+  "alfalfa": 438
+ },
+ "source": "USDA NASS QuickStats 2020+"
+}

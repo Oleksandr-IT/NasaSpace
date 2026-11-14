@@ -19,3 +19,6 @@ backend/cache/*
 !backend/cache/*_42.1_-93.55.json
 !backend/cache/*_37.95_-98.0.json
 !backend/cache/*_35.22_-77.62.json
+!backend/cache/nass_Iowa.json
+!backend/cache/nass_Kansas.json
+!backend/cache/nass_North_Carolina.json

@@ -5,13 +5,15 @@
 Документація з усіма ендпоінтами: http://127.0.0.1:8000/docs
 """
 import json
+from concurrent.futures import ThreadPoolExecutor
 from pathlib import Path
 
-from fastapi import FastAPI
+import requests
+from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 
-from services import cache, cdl, power, soil, strategies
+from services import cache, cdl, earthdata, nass, power, soil, strategies
 
 app = FastAPI(title="Field Shift API")
 
@@ -32,29 +34,47 @@ def get_field(lat: float, lon: float) -> dict:
     key = f"{lat}_{lon}"
     warnings = []
 
-    try:
-        climate = cache.cached(f"climate_{key}", lambda: power.climate_summary(power.fetch_daily(lat, lon)))
-    except Exception as error:  # без клімату далі рахувати не можемо
-        raise RuntimeError(f"NASA POWER is not available: {error}")
+    # Три джерела завантажуємо одночасно, а не по черзі
+    with ThreadPoolExecutor(max_workers=3) as pool:
+        climate_job = pool.submit(cache.cached, f"climate_{key}", lambda: power.climate_summary(power.fetch_daily(lat, lon)))
+        soil_job = pool.submit(cache.cached, f"soil_{key}", lambda: soil.fetch_soil(lat, lon))
+        cdl_job = pool.submit(cache.cached, f"cdl_{key}", lambda: cdl.fetch_history(lat, lon))
 
     try:
-        soil_info = cache.cached(f"soil_{key}", lambda: soil.fetch_soil(lat, lon))
+        climate = climate_job.result()
+    except Exception as error:  # без клімату далі рахувати не можемо
+        raise HTTPException(status_code=502, detail=f"NASA POWER is not available: {error}")
+
+    try:
+        soil_info = soil_job.result()
     except Exception as error:
         soil_info = None
         warnings.append(f"Soil data not available: {error}")
 
     try:
-        history = cache.cached(f"cdl_{key}", lambda: cdl.fetch_history(lat, lon))
+        history = cdl_job.result()
     except Exception as error:
         history = []
         warnings.append(f"Crop history not available: {error}")
 
     rotation = cdl.detect_rotation(history) if history else {"pattern": [], "label": "Unknown"}
+
+    # Ціни NASS: лише якщо є ключ у .env, інакше модель бере оцінки з crops.json
+    revenue = None
+    if nass.api_key() and soil_info:
+        state = soil_info["area"].split(", ")[-1]  # "Story County, Iowa" -> "Iowa"
+        try:
+            revenue = cache.cached(f"nass_{state}", lambda: nass.state_revenues(state))
+        except Exception as error:
+            warnings.append(f"Crop prices not available: {error}")
+
     return {
         "location": {"lat": lat, "lon": lon, "area": soil_info["area"] if soil_info else None},
         "soil": soil_info,
         "climate": climate,
         "current_rotation": {**rotation, "history": history, "source": "USDA CDL"},
+        "satellite": cache.load(f"satellite_{key}"),  # лише якщо вже завантажено через /api/satellite
+        "revenue": revenue,
         "warnings": warnings,
     }
 
@@ -67,6 +87,32 @@ def health():
 @app.get("/api/demo-fields")
 def demo_fields():
     return DEMO_FIELDS
+
+
+@app.get("/api/satellite")
+def satellite(lat: float, lon: float):
+    """Справжні супутникові дані NASA (IMERG, SMAP). Для нового поля — близько 2 хвилин."""
+    lat, lon = round(lat, 2), round(lon, 2)
+    try:
+        return cache.cached(f"satellite_{lat}_{lon}", lambda: earthdata.satellite_summary(lat, lon))
+    except Exception as error:
+        raise HTTPException(status_code=502, detail=f"NASA Earthdata is not available: {error}")
+
+
+@app.get("/api/geocode")
+def geocode(q: str):
+    """Пошук адреси або назви місця в США через OpenStreetMap Nominatim."""
+    response = requests.get(
+        "https://nominatim.openstreetmap.org/search",
+        params={"q": q, "format": "json", "countrycodes": "us", "limit": 1},
+        headers={"User-Agent": "FieldShift-hackathon-app/0.1"},
+        timeout=20,
+    )
+    response.raise_for_status()
+    results = response.json()
+    if not results:
+        raise HTTPException(status_code=404, detail="Place not found")
+    return {"lat": float(results[0]["lat"]), "lon": float(results[0]["lon"]), "name": results[0]["display_name"]}
 
 
 @app.get("/api/field")
